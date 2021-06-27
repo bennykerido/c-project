@@ -30,7 +30,6 @@ void showEmployees(employee *head)
         current = current->next;
         counter++;
     }
-    newSelection();
 }
 
 void addEmployee(employee **head)
@@ -42,8 +41,13 @@ void addEmployee(employee **head)
     gets(name);
     strcpy(newWorker->name, &name);
     int id = 0;
-    printf("Enter a ID number: ");
-    scanf("%d", &id);
+    do {
+        printf("Enter a ID number: ");
+        scanf("%d", &id);
+        if(id < 10000000 || id > 999999999){
+            printf("Wrong ID number format (9-digit long)\n");
+        }
+    }while(id < 10000000 || id > 999999999);
     newWorker->idNum = id;
     float salary = 0;
     printf("Enter a salary: ");
@@ -54,13 +58,16 @@ void addEmployee(employee **head)
         *head = newWorker;
         system("color A");
         printf("Employee was added!\n");
-        getchar();
-        newSelection();
         return;
     }
     employee *current = *head;
     while(current != NULL){
-        if(current->idNum > newWorker->idNum)
+        if(current->idNum == newWorker->idNum){
+            system("color 4");
+            printf("An employee with that ID number was already added!\n");
+            return;
+        }
+        else if(current->idNum > newWorker->idNum)
         {
             newWorker->next = *head;
             *head = newWorker;
@@ -81,8 +88,6 @@ void addEmployee(employee **head)
     }
     system("color A");
     printf("Employee was added!\n");
-    getchar();
-    newSelection();
     return;
 }
 
@@ -93,7 +98,6 @@ void removeEmployee(employee **head)
     {
         system("color 4");
         printf("There are no employees in the list!\n");
-        newSelection();
         return;
     }
     employee *worker;
@@ -106,8 +110,6 @@ void removeEmployee(employee **head)
         worker = head;
         *head = current->next;
         free(worker);
-        getchar();
-        newSelection();
         return;
     }
     while(current->next != NULL) {
@@ -117,24 +119,18 @@ void removeEmployee(employee **head)
             system("color A");
             printf("[%s] ID Number: [%d] was removed!\n", worker->name, worker->idNum);
             free(worker);
-            getchar();
-            newSelection();
             return;
         } else if(worker->idNum == id && worker->next == NULL) {
             current->next = NULL;
             system("color A");
             printf("[%s] ID Number: [%d] was removed!\n", worker->name, worker->idNum);
             free(worker);
-            getchar();
-            newSelection();
             return;
         }
         current = current->next;
     }
     system("color 4");
     printf("There is no employee in the list with that ID number!\n");
-    getchar();
-    newSelection();
 }
 
 
@@ -175,14 +171,19 @@ int main()
             case 1:
                 gets(buffer);
                 addEmployee(&head);
+                getchar();
+                newSelection();
                 break;
             case 2:
                 gets(buffer);
                 removeEmployee(&head);
+                getchar();
+                newSelection();
                 break;
             case 3:
                 gets(buffer);
                 showEmployees(head);
+                newSelection();
                 break;
             case 9:
                 printf("Bye bye :)\n");
